@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.UserMapper" >
+
+    <resultMap id="findUserInfo" type="com.stock.models.User">
+        <id column="uid" property="id"></id>
+        <result column="username" property="username"></result>
+        <result column="password" property="password"></result>
+        <association property="role"  javaType="com.stock.models.Role">
+            <result column="role_name" property="role_name"></result>
+            <collection property="permission" javaType="java.util.ArrayList" ofType="com.stock.models.Permission">
+                <id column="pid" property="id"></id>
+                <result column="pid" property="id" ></result>
+                <result column="parent_id" property="parent_id" ></result>
+            </collection>
+        </association>
+    </resultMap>
+
+    <select id="findUserInfo" resultMap="findUserInfo" parameterType="java.lang.Integer">
+        SELECT u.id uid,u.username,r.role_name,p.id pid,p.parent_id from user u LEFT JOIN user_role ur on u.id = ur.user_id LEFT JOIN role r on ur.role_id = r.id LEFT JOIN role_per rp on rp.role_id = r.id LEFT JOIN permission p on p.id = rp.per_id where u.id =#{id}
+    </select>
+
+    <resultMap id="findUserInfo_" type="com.stock.models.User">
+        <id column="uid" property="id"></id>
+        <result column="username" property="username"></result>
+        <result column="password" property="password"></result>
+        <association property="role"  javaType="com.stock.models.Role">
+            <result column="role_name" property="role_name"></result>
+            <collection property="permission" javaType="java.util.ArrayList" ofType="com.stock.models.Permission" >
+                <id column="id" property="id"/>
+                <result column="url" property="url"></result>
+            </collection>
+        </association>
+    </resultMap>
+
+
+    <select id="findUserInfoByName" resultMap="findUserInfo_" parameterType="String">
+        SELECT u.id uid,u.password,u.username,r.role_name ,p.* from user u LEFT JOIN user_role ur on u.id = ur.user_id LEFT JOIN role r on ur.role_id = r.id LEFT JOIN role_per rp on rp.role_id = r.id LEFT JOIN permission p on p.id = rp.per_id where u.username =#{username}
+    </select>
+
+    <select id="getAllUserByPage" resultType="com.stock.models.User">
+         select * from user
+    </select>
+
+</mapper>
