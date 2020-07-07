@@ -11,7 +11,11 @@ import java.util.Map;
 public interface UserService {
     User findUserInfo(int id);
     public List<Permission> getMenus(ArrayList<Integer> ids);
-    List<User> getAllUserByPage(String pageNo,String pageSize);
+    List<List<?>> getAllUserByPage(Map map);
+    Boolean updateUser(User user);
+    int getCount(Map map);
+    int updateStatus(Map map);
+    int addUser(User user);
 }
 
 

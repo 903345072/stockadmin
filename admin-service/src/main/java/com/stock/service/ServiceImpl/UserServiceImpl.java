@@ -27,8 +27,42 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getAllUserByPage(String pageNo, String pageSize) {
-        return userMapper.getAllUserByPage(Integer.parseInt(pageNo),Integer.parseInt(pageSize));
+    public List<List<?>> getAllUserByPage(Map map) {
+        return userMapper.getAllUserByPage(map);
+    }
+
+    @Override
+    public Boolean updateUser(User user) {
+        try {
+            userMapper.updateUser(user);
+            userMapper.deleteUserRole(user.getId());
+            if(user.role_node != null && user.role_node.size()>0){
+                userMapper.insertUserRole(user.getId(),user.role_node);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+       return true;
+    }
+
+    @Override
+    public int getCount(Map map) {
+        return userMapper.getCount(map);
+    }
+
+    @Override
+    public int updateStatus(Map map) {
+        return userMapper.updateStatus(map);
+    }
+
+    @Override
+    public int addUser(User user) {
+        int res = userMapper.addUser(user);
+        if(user.role_node != null && user.role_node.size()>0){
+            userMapper.insertUserRole(user.getId(), user.role_node);
+        }
+        return user.getId();
     }
 
     /**

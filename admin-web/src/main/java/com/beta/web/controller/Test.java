@@ -3,6 +3,7 @@ package com.beta.web.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.stock.models.Permission;
+import com.stock.models.Role;
 import com.stock.models.User;
 
 import com.stock.service.PermissionService;
@@ -23,8 +24,7 @@ import java.util.List;
 @RestController
 public class Test {
 
-    @Autowired
-    User user;
+
 
     @Autowired
     PermissionService PermissionServiceImpl;
@@ -32,16 +32,11 @@ public class Test {
     @Autowired
     UserService UserServiceImpl;
 
-    @RequestMapping("/test")
+    @RequestMapping("/testd")
     public void echo()
     {
-        Permission pm = new Permission();
-        pm.setComponent("a");
-        pm.setParent_id(0);
-        pm.setPath("/a");
-        pm.setTitle("dd");
-        PermissionServiceImpl.insertOnePermission(pm);
-        System.out.println(pm.getId());
+
+        System.out.println(333);
     }
 
     @RequestMapping("/getUserInfo")
@@ -54,17 +49,27 @@ public class Test {
         User user = UserServiceImpl.findUserInfo(id);
         List<Object> lists = new ArrayList<>();
         HashMap<Object,Object> hm = new HashMap<>();
-        hm.put("roles", user.getRole().getRole_name());
+        hm.put("roles", "admins");
         hm.put("name", user.getUsername());
         hm.put("avatar", new java.lang.String("https://pic4.zhimg.com/v2-97dea6d0e3c7378dccb10d41baa992f7_1200x500.jpg"));
         hm.put("introduction", new java.lang.String("你爹来辣"));
         HashMap<Object,Object> route = new HashMap<>();
-        ArrayList<Permission> a = user.getRole().getPermission();
+        ArrayList<Permission> permissionArrayList = new ArrayList<>();
+        for (Role role : user.getRole()){
+            for (Permission permission: role.getPermission()){
+                permissionArrayList.add(permission);
+            }
+        }
         ArrayList<Integer> ids = new ArrayList<>();
-        a.forEach((v)->{
+        permissionArrayList.forEach((v)->{
             ids.add(v.getId());
         });
-        hm.put("routelist", UserServiceImpl.getMenus(ids));
+        if (ids.size()>0){
+            hm.put("routelist", UserServiceImpl.getMenus(ids));
+        }else {
+            hm.put("routelist", new ArrayList<>());
+        }
+
         lists.add(hm);
         HashMap<Object,Object> hm1 = new HashMap<>();
         hm1.put("data",lists);

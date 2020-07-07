@@ -9,5 +9,11 @@ import java.util.Map;
 public interface UserMapper {
     User findUserInfo(int id);
     User findUserInfoByName(String username);
-    List<User> getAllUserByPage(@Param("currPage")Integer pageNo, @Param("pageSize")Integer pageSize);
+    List<List<?>> getAllUserByPage(Map map);
+    void updateUser(User user);
+    int deleteUserRole(int id);
+    int insertUserRole(@Param(value = "id") int id,@Param(value = "role_node")List role_node);
+    int getCount(Map map);
+    int updateStatus(Map map);
+    int addUser(User user);
 }

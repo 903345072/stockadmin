@@ -15,9 +15,11 @@ import java.util.Properties;
 @Intercepts({@Signature(type = StatementHandler.class, method = "prepare", args = {Connection.class, Integer.class})})
 public class MyPageInterceptor implements Interceptor {
     //每页显示的条目数
-    private int pageSize;
+    private String pageSize;
     //当前现实的页数
-    private int currPage;
+    private String  currPage;
+    //排序字段
+    private String sort;
     //数据库类型
     private String dbType;
     @Override
@@ -57,13 +59,15 @@ public class MyPageInterceptor implements Interceptor {
             //获取进行数据库操作时管理参数的handler
             ParameterHandler parameterHandler = (ParameterHandler) MetaObjectHandler.getValue("delegate.parameterHandler");
             //获取请求时的参数
-            Map<String, Object> paraObject = (Map<String, Object>) parameterHandler.getParameterObject();
+            Map paraObject = (Map<String, Object>) parameterHandler.getParameterObject();
+
             //也可以这样获取
             //paraObject = (Map<String, Object>) statementHandler.getBoundSql().getParameterObject();
 
             //参数名称和在service中设置到map中的名称一致
-            currPage = (int) paraObject.get("currPage");
-            pageSize = (int) paraObject.get("pageSize");
+            currPage = (String) paraObject.get("page");
+            pageSize = (String) paraObject.get("limit");
+            sort = (String) paraObject.get("sort");
 
             String sql = (String) MetaObjectHandler.getValue("delegate.boundSql.sql");
             //也可以通过statementHandler直接获取
@@ -72,7 +76,12 @@ public class MyPageInterceptor implements Interceptor {
             //构建分页功能的sql语句
             String limitSql;
             sql = sql.trim();
-            limitSql = sql + " limit " + (currPage - 1) * pageSize + "," + pageSize;
+            if(sort.contains("-")){
+                sql = sql+" order by "+sort.substring(1)+" desc ";
+            }else {
+                sql = sql+" order by id asc ";
+            }
+            limitSql = sql + " limit " + (Integer.parseInt(currPage) - 1) * Integer.parseInt(pageSize) + "," + pageSize;
 
             //将构建完成的分页sql语句赋值个体'delegate.boundSql.sql'，偷天换日
             MetaObjectHandler.setValue("delegate.boundSql.sql", limitSql);
@@ -89,7 +98,7 @@ public class MyPageInterceptor implements Interceptor {
     @Override
     public void setProperties(Properties properties) {
         String limit1 = properties.getProperty("limit", "10");
-        this.pageSize = Integer.valueOf(limit1);
+        this.pageSize = limit1;
         this.dbType = properties.getProperty("dbType", "mysql");
     }
 }

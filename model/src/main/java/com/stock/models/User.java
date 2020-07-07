@@ -2,15 +2,26 @@ package com.stock.models;
 
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 
 @Component
 public class User {
     private int id;
-    private String username="yang";
+    private String username;
     private String password;
     private String created_at;
     private int status;
-    private Role role;
+    private List<Role> role;
+    public List<Integer> role_node;
+
+    public List<Role> getRole() {
+        return role;
+    }
+
+    public void setRole(List<Role> role) {
+        this.role = role;
+    }
 
     public String getCreated_at() {
         return created_at;
@@ -28,13 +39,7 @@ public class User {
         this.status = status;
     }
 
-    public Role getRole() {
-        return role;
-    }
 
-    public void setRole(Role role) {
-        this.role = role;
-    }
 
     public int getId() {
         return id;

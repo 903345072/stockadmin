@@ -18,4 +18,5 @@ public interface RoleMapper {
     void deleteRolePer(@Param(value = "role_id") int Role_id);
     void updateRole(Role role);
     void deleteRole(@Param(value = "id") int id);
+    List<Role> findAllRole();
 }

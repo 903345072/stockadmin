@@ -1,5 +1,6 @@
 package com.beta.web.service;
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,6 +15,15 @@ public class UserSetter implements UserDetails {
     //登录密码
     private String password;
     private int Id;
+    private int status;
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
 
     public int getId() {
         return Id;
@@ -69,6 +79,10 @@ public class UserSetter implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+
+        if(getStatus() == 1){
+            return true;
+        }
+        return false;
     }
 }

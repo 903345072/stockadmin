@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -27,6 +28,10 @@ public class RoleServiceImpl implements RoleService {
         }
        return role.getId();
     }
+    @Override
+    public List<Role> findAllRole(){
+        return roleMapper.findAllRole();
+    };
 
     @Override
     public ArrayList<Role> findRole(Map<String, Object> map) {
@@ -40,9 +45,14 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public void updateRole(Role role) {
-        roleMapper.updateRole(role);
-        roleMapper.deleteRolePer(role.getId());
-        roleMapper.insertRolePer(role.getId(),role.permission_node);
+        try {
+            roleMapper.updateRole(role);
+            roleMapper.deleteRolePer(role.getId());
+            roleMapper.insertRolePer(role.getId(),role.permission_node);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     @Override

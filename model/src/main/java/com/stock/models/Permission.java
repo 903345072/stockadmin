@@ -16,6 +16,19 @@ public class Permission {
     private String title;
     private ArrayList<Permission> children;
     private ArrayList<Role> role;
+
+    public String getDisplayed_left() {
+        return displayed_left;
+    }
+
+    public void setDisplayed_left(String displayed_left) {
+        this.displayed_left = displayed_left;
+    }
+
+    private String displayed_left;
+
+
+
     private Meta meta;
 
     public Meta getMeta() {

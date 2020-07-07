@@ -4,6 +4,7 @@ package com.beta.web.service;
 import com.alibaba.fastjson.JSON;
 import com.mapper.UserMapper;
 import com.stock.models.Permission;
+import com.stock.models.Role;
 import com.stock.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 登录专用类,用户登陆时，通过这里查询数据库
@@ -42,11 +44,15 @@ public class MyCustomUserService implements UserDetailsService {
         userSetter.setUsername(user.getUsername());
         userSetter.setPassword(user.getPassword());
         userSetter.setId(user.getId());
-        ArrayList<Permission> a = user.getRole().getPermission();
+        userSetter.setStatus(user.getStatus());
+        ArrayList<Permission> permissionArrayList = new ArrayList<>();
+        for (Role role : user.getRole()){
+            for (Permission permission: role.getPermission()){
+                permissionArrayList.add(permission);
+            }
+        }
         ArrayList<SimpleGrantedAuthority> authorities = new ArrayList<>();
-//        authorities.add(new SimpleGrantedAuthority("p1"));
-//        authorities.add(new SimpleGrantedAuthority("p2"));
-        a.forEach((v)->{
+        permissionArrayList.forEach((v)->{
                if(v.getUrl() != null){
                    authorities.add(new SimpleGrantedAuthority(v.getUrl()));
                }

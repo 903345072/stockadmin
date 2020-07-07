@@ -1,23 +1,22 @@
 package com.beta.web.filter;
 
-import com.alibaba.fastjson.JSON;
 import com.beta.web.service.UserSetter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stock.models.User;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
 
@@ -40,33 +39,35 @@ public class JWTLoginFilter extends UsernamePasswordAuthenticationFilter {
      * 接收并解析用户凭证，出現错误时，返回json数据前端
      */
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res){
+    public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res) {
         try {
-
             User user =new ObjectMapper().readValue(req.getInputStream(), User.class);
-
             return authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             user.getUsername(),
                             user.getPassword(),
                             new ArrayList<>())
             );
-        } catch (Exception e) {
+        }catch (BadCredentialsException e){  //用户密码错误异常
             try {
                 //登录成功時，返回json格式进行提示
-                res.setContentType("application/json;charset=utf-8");
-                res.setStatus(200);
-                PrintWriter out = res.getWriter();
-                Map<String,Object> map = new HashMap<String,Object>();
-                map.put("code", 406);
-                map.put("message","用户名或密码错误！");
-                out.write(new ObjectMapper().writeValueAsString(map));
-                out.flush();
-                out.close();
+                responseJson(res,"用户或密码错误",406);
+                return null;
             } catch (Exception e1) {
-                e1.printStackTrace();
+                 e.printStackTrace();
             }
-            throw new RuntimeException(e);
+            throw new BadCredentialsException("用户或密码错误");
+        }catch (DisabledException e){
+            try {
+                //登录成功時，返回json格式进行提示
+                responseJson(res,"账户已被禁用",407);
+                return null;
+            } catch (Exception e1) {
+                e.printStackTrace();
+            }
+            throw new BadCredentialsException("账户已被禁用");
+        }catch (IOException e){
+            throw new RuntimeException();
         }
     }
 
@@ -117,5 +118,19 @@ public class JWTLoginFilter extends UsernamePasswordAuthenticationFilter {
         } catch (Exception e1) {
             e1.printStackTrace();
         }
+    }
+
+    private void responseJson(HttpServletResponse response, String msg, int code) throws IOException {
+
+            //未登錄時，使用json進行提示
+            response.setContentType("application/json;charset=utf-8");
+            response.setStatus(200);
+            PrintWriter out = response.getWriter();
+            Map<String,Object> map = new HashMap<String,Object>();
+            map.put("code", code);
+            map.put("message",msg);
+            out.write(new ObjectMapper().writeValueAsString(map));
+            out.flush();
+            out.close();
     }
 }

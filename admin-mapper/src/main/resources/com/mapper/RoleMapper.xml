@@ -23,7 +23,6 @@
         <id column="id" property="id"></id>
         <result column="role_name" property="role_name"></result>
         <collection property="permission" resultMap="permissionMap"/>
-
     </resultMap>
 
     <resultMap id="permissionMap" type="com.stock.models.Permission">
@@ -59,8 +58,13 @@
         delete from role where id = #{id}
     </delete>
 
-    <select id="findRoleById">
-        select * from
+
+    <resultMap id="findAllRoleMap" type="com.stock.models.Role" >
+        <id property="id" column="id"></id>
+        <result column="role_name" property="role_name"></result>
+    </resultMap>
+    <select id="findAllRole" resultMap="findAllRoleMap">
+        select * from role
     </select>
 
 </mapper>
