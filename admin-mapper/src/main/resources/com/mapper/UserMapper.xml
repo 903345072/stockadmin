@@ -14,12 +14,13 @@
                 <id column="pid" property="id"></id>
                 <result column="pid" property="id" ></result>
                 <result column="parent_id" property="parent_id" ></result>
+                <result column="url" property="url"></result>
             </collection>
         </collection>
     </resultMap>
 
     <select id="findUserInfo" resultMap="findUserInfo" parameterType="java.lang.Integer">
-        SELECT u.id uid,u.username,r.role_name,p.id pid,p.parent_id from user u LEFT JOIN user_role ur on u.id = ur.user_id LEFT JOIN role r on ur.role_id = r.id LEFT JOIN role_per rp on rp.role_id = r.id LEFT JOIN permission p on p.id = rp.per_id where u.id =#{id}
+        SELECT u.id uid,u.username,r.role_name,p.id pid,p.parent_id,p.url from admin_user u LEFT JOIN user_role ur on u.id = ur.user_id LEFT JOIN role r on ur.role_id = r.id LEFT JOIN role_per rp on rp.role_id = r.id LEFT JOIN permission p on p.id = rp.per_id where u.id =#{id}
     </select>
 
     <resultMap id="findUserInfo_" type="com.stock.models.User">
@@ -38,7 +39,7 @@
 
 
     <select id="findUserInfoByName" resultMap="findUserInfo_" parameterType="String">
-        SELECT u.id uid,u.status,u.password,u.username,r.role_name ,p.* from user u LEFT JOIN user_role ur on u.id = ur.user_id LEFT JOIN role r on ur.role_id = r.id LEFT JOIN role_per rp on rp.role_id = r.id LEFT JOIN permission p on p.id = rp.per_id where u.username =#{username}
+        SELECT u.id uid,u.status,u.password,u.username,r.role_name ,p.* from admin_user u LEFT JOIN user_role ur on u.id = ur.user_id LEFT JOIN role r on ur.role_id = r.id LEFT JOIN role_per rp on rp.role_id = r.id LEFT JOIN permission p on p.id = rp.per_id where u.username =#{username}
     </select>
 
     <resultMap id="getAllUserMap" type="com.stock.models.User">
@@ -52,7 +53,7 @@
         </collection>
     </resultMap>
     <select id="getAllUserByPage" resultMap="getAllUserMap">
-         select u.id id,u.status,u.created_at,u.username,r.id rid,r.role_name,ur.* from user u left join user_role ur on u.id = ur.user_id left join role r on ur.role_id = r.id where 1=1
+         select u.id id,u.status,u.created_at,u.username,r.id rid,r.role_name,ur.* from admin_user u left join user_role ur on u.id = ur.user_id left join role r on ur.role_id = r.id where 1=1
 
              <if test="username != null and username != '' ">
                  and u.username = #{username}
@@ -75,10 +76,10 @@
         </foreach>
     </insert>
     <update id="updateUser">
-        update user set username = #{username}<if test="password != null and password != ''">,password=#{password}</if> where id = #{id}
+        update admin_user set username = #{username}<if test="password != null and password != ''">,password=#{password}</if>,status=#{status} where id = #{id}
     </update>
     <select id="getCount" resultType="java.lang.Integer">
-        select count(*) from user where 1=1
+        select count(*) from admin_user where 1=1
         <if test="username != null and username != '' ">
             and username = #{username}
         </if>
@@ -88,9 +89,9 @@
     </select>
 
     <update id="updateStatus">
-        update user set status = #{status} where id = #{id}
+        update admin_user set status = #{status} where id = #{id}
     </update>
     <insert id="addUser" parameterType="com.stock.models.User" useGeneratedKeys="true" keyProperty="id">
-        insert into user (username,password,created_at)values (#{username},#{password},now())
+        insert into admin_user (username,password,created_at)values (#{username},#{password},now())
     </insert>
 </mapper>

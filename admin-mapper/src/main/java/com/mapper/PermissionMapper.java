@@ -16,4 +16,5 @@ public interface PermissionMapper {
     ArrayList<Map<String, Object>> findIds(int id);
     Boolean deleteOnePermission(@Param("ids") ArrayList<Integer> ids);
     List<Permission> findPermissionByIds(@Param("ids") ArrayList<Integer> ids);
+    Permission findPermissionById(int id);
 }

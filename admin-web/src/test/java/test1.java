@@ -7,6 +7,7 @@ import com.stock.models.Permission;
 import com.stock.models.Role;
 import com.stock.models.User;
 import com.stock.service.PermissionService;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import java.util.*;
 @RunWith(SpringRunner.class)
 public class test1 {
 
+
     @Autowired
     PermissionMapper permissionMapper;
 
@@ -26,13 +28,8 @@ public class test1 {
     RoleMapper roleMapper;
     @Autowired
     UserMapper userMapper;
-    @Test
-    public void test2(){
-        ArrayList<Integer> lists = new ArrayList<Integer>();
-        ArrayList<Map<String ,Object>> permissions = permissionMapper.findIds(13);
-        findChild(permissions, lists);
-        System.out.println(lists);
-    }
+
+
 //[{children=[{children=[{children=[{children=[], id=31}], id=19}], id=18}, {children=[], id=30}], id=13}]
     public void findChild(ArrayList<Map<String ,Object>> permissions, ArrayList<Integer> lists){
         for(Map<String,Object> map : permissions){

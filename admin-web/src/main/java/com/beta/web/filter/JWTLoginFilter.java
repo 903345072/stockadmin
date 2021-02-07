@@ -3,14 +3,13 @@ package com.beta.web.filter;
 import com.beta.web.service.UserSetter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stock.models.User;
+import com.stock.models.common.CommonUser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.FilterChain;
@@ -41,14 +40,14 @@ public class JWTLoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res) {
         try {
-            User user =new ObjectMapper().readValue(req.getInputStream(), User.class);
+            CommonUser user =new ObjectMapper().readValue(req.getInputStream(), CommonUser.class);
             return authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             user.getUsername(),
                             user.getPassword(),
                             new ArrayList<>())
             );
-        }catch (BadCredentialsException e){  //用户密码错误异常
+        }catch (BadCredentialsException | InternalAuthenticationServiceException e){  //用户密码错误异常
             try {
                 //登录成功時，返回json格式进行提示
                 responseJson(res,"用户或密码错误",406);
@@ -66,7 +65,8 @@ public class JWTLoginFilter extends UsernamePasswordAuthenticationFilter {
                 e.printStackTrace();
             }
             throw new BadCredentialsException("账户已被禁用");
-        }catch (IOException e){
+        } catch (IOException e){
+            e.printStackTrace();
             throw new RuntimeException();
         }
     }
@@ -112,6 +112,7 @@ public class JWTLoginFilter extends UsernamePasswordAuthenticationFilter {
             map.put("code", HttpServletResponse.SC_OK);
             map.put("message","登陆成功！");
             map.put("token","Bearer " + token);
+            map.put("data","Bearer " + token);
             out.write(new ObjectMapper().writeValueAsString(map));
             out.flush();
             out.close();
@@ -121,7 +122,6 @@ public class JWTLoginFilter extends UsernamePasswordAuthenticationFilter {
     }
 
     private void responseJson(HttpServletResponse response, String msg, int code) throws IOException {
-
             //未登錄時，使用json進行提示
             response.setContentType("application/json;charset=utf-8");
             response.setStatus(200);

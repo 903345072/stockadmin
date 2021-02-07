@@ -31,19 +31,25 @@
     </resultMap>
 
     <select id="findRole" resultMap="findRole">
-        select r.id,r.role_name,p.id pid,p.title  from role r left join role_per rp on r.id = rp.role_id left join permission p on rp.per_id = p.id  where 1 = 1
+select p.id pid,p.title, r.id,r.role_name,p.id pid,p.title from permission p left join role_per rp on rp.per_id = p.id left join role r on r.id = rp.role_id where rp.role_id in (
+select t.id from(select id from role where 1= 1
+
         <if test="role_name != null and role_name != '' ">
-             and r.role_name = #{role_name}
+            and role_name = #{role_name}
         </if>
         <choose>
             <when test="sort == '+id'">
-         order by id asc
+                order by id asc
             </when>
             <otherwise >
                 order by id desc
             </otherwise>
         </choose>
-       limit #{lim_n},${limit}
+        limit #{lim_n},${limit}
+        ) as t
+)
+
+
     </select>
 
     <select id="findCount" resultType="java.lang.Integer">

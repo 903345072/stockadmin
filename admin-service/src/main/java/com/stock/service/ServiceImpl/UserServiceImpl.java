@@ -7,6 +7,7 @@ import com.stock.models.Permission;
 import com.stock.models.User;
 import com.stock.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -34,6 +35,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean updateUser(User user) {
         try {
+            if(user.getPassword() != null){
+                user.setPassword(BCrypt.hashpw(user.getPassword(),BCrypt.gensalt()));
+            }
             userMapper.updateUser(user);
             userMapper.deleteUserRole(user.getId());
             if(user.role_node != null && user.role_node.size()>0){
@@ -58,6 +62,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public int addUser(User user) {
+        if(user.getPassword() != null){
+            user.setPassword(BCrypt.hashpw(user.getPassword(),BCrypt.gensalt()));
+        }
         int res = userMapper.addUser(user);
         if(user.role_node != null && user.role_node.size()>0){
             userMapper.insertUserRole(user.getId(), user.role_node);

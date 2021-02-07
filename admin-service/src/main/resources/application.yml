@@ -1,0 +1,16 @@
+spring:
+  rabbitmq:
+    host: 112.126.76.191
+    port: 5672
+    username: admin
+    password: 903345072
+    virtual-host: my_vhost
+    listener:
+      simple:
+        concurrency: 10
+        max-concurrency: 10
+        prefetch: 1
+        acknowledge-mode: manual #手动应答
+        retry:
+          enabled: true
+

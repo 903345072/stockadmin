@@ -1,12 +1,14 @@
 package com.stock.models;
 
+import com.stock.models.common.CommonUser;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 
 @Component
-public class User {
+public class User extends CommonUser {
     private int id;
     private String username;
     private String password;

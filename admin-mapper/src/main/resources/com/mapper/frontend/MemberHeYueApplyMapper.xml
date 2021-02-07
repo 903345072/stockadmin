@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.frontend.MemberHeYueApplyMapper" >
+
+   <insert id="addOneHeYueApply" parameterType="java.util.Map">
+       insert into member_heyue_apply (member_id,total_capital,deposit,leverage_money,loss_warning_line,loss_sell_line,interest_rate,interest,capital_used_time,repare_capital,apply_state,apply_time)values
+       (#{member_id},#{total_capital},#{deposit},#{leverage_money},#{loss_warning_line},#{loss_sell_line},#{interest_rate},#{interest},#{capital_used_time},#{repare_capital},#{apply_state},now())
+   </insert>
+
+    <resultMap id="findMemberHeYueApplyListByPage" type="com.stock.models.MemberHeYueApply">
+        <id property="id" column="id"></id>
+        <result property="member_id" column="member_id"></result>
+        <result property="total_capital" column="total_capital"></result>
+        <result property="deposit" column="deposit"></result>
+        <result property="leverage_money" column="leverage_money"></result>
+        <result property="loss_warning_line" column="loss_warning_line"></result>
+        <result property="loss_sell_line" column="loss_sell_line"></result>
+        <result property="interest_rate" column="interest_rate"></result>
+        <result property="interest" column="interest"></result>
+        <result property="capital_used_time" column="capital_used_time"></result>
+        <result property="repare_capital" column="repare_capital"></result>
+        <result property="apply_state" column="apply_state"></result>
+        <result property="apply_time" column="apply_time"></result>
+        <association property="member" javaType="java.util.Map">
+            <id property="id" column="mid"></id>
+            <result column="username" property="username"></result>
+        </association>
+    </resultMap>
+
+
+    <select id="findMemberHeYueApplyListByPage" resultMap="findMemberHeYueApplyListByPage">
+        select mha.* ,m.id mid,m.username  from member_heyue_apply mha left join member m on mha.member_id = m.id where 1 = 1
+        <include refid="common_if"/>
+
+    </select>
+    <sql id="common_if">
+        <if test="username != null and username != '' ">
+            and username = #{username}
+        </if>
+        <if test="apply_state != null and apply_state != '' ">
+            and apply_state = #{apply_state}
+        </if>
+    </sql>
+
+    <select id="findMemberHeYueApplyCount" resultType="java.lang.Integer">
+        select count(*)  from member_heyue_apply mha left join member m on mha.member_id = m.id where 1 = 1
+        <include refid="common_if"/>
+    </select>
+    <update id="updateHeYueApplyState" parameterType="java.util.Map">
+        update member_heyue_apply set apply_state = #{apply_state} where id = #{id}
+    </update>
+
+    <resultMap id="selectMemberHeYueByCase" type="java.util.Map">
+        <id column="id" property="id"></id>
+        <result column="deposit" property="deposit"></result>
+        <result column="total_capital" property="total_capital"></result>
+    </resultMap>
+    <select id="selectMemberHeYueByCase" resultMap="selectMemberHeYueByCase" resultType="java.util.List" parameterType="java.util.Map">
+        select id,deposit,total_capital from member_heyue_apply where member_id = #{member_id} and apply_state = 1
+    </select>
+</mapper>

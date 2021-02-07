@@ -79,7 +79,7 @@ public class MyPageInterceptor implements Interceptor {
             if(sort.contains("-")){
                 sql = sql+" order by "+sort.substring(1)+" desc ";
             }else {
-                sql = sql+" order by id asc ";
+                sql = sql+" order by " +sort.substring(1)+" asc ";
             }
             limitSql = sql + " limit " + (Integer.parseInt(currPage) - 1) * Integer.parseInt(pageSize) + "," + pageSize;
 

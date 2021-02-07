@@ -10,6 +10,7 @@
         <module>admin-mapper</module>
         <module>utils</module>
         <module>interceptor</module>
+        <module>validator</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
